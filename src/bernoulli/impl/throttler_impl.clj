@@ -1,6 +1,5 @@
 (ns bernoulli.impl.throttler-impl
-  (:require [com.climate.claypoole :as threadpool]
-            [clj-time.core :as time])
+  (:require [com.climate.claypoole :as threadpool])
   (:refer-clojure :exclude [delay]))
 
 (defn now
@@ -10,9 +9,11 @@
 (defn delay
   [this]
   (let [n (now)
-        time-since-last-call-ms (- n @(:last-call-time-ms this))
+        last-call-time-ms @(:last-call-time-ms this)
+        time-since-last-call-ms (- n last-call-time-ms)
         delay-time-ms (max 0 (- (:time-ms this) time-since-last-call-ms))]
-    (reset! (:last-call-time-ms this) (+ n delay-time-ms))
-    (when (not= 0 delay-time-ms)
-      (deref (threadpool/future (:pool this)
-                                (Thread/sleep delay-time-ms))))))
+    (if-not (compare-and-set! (:last-call-time-ms this) last-call-time-ms (+ n delay-time-ms))
+      (recur this)
+      (when (not= 0 delay-time-ms)
+        (deref (threadpool/future (:pool this)
+                                  (Thread/sleep delay-time-ms)))))))
