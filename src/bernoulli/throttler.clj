@@ -7,8 +7,7 @@
   (threadpool/threadpool (threadpool/ncpus)))
 
 (defprotocol ThrottlerInterface
-  (delay [this])
-  (close [this]))
+  (delay [this]))
 
 (defrecord Throttler
     [time-ms
@@ -17,8 +16,7 @@
 
 (extend Throttler
   ThrottlerInterface
-  {:delay impl/delay
-   :close impl/close})
+  {:delay impl/delay})
 
 (defn throttler
   [{:keys [time-ms thread-pool] :or {time-ms 1000 thread-pool default-threadpool}}]

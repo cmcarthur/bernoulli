@@ -8,4 +8,5 @@
                  [com.climate/claypoole "0.3.3"]]
   :profiles {:test {:plugins [[lein-midje "3.1.3"]]
                     :dependencies [[midje "1.6.3"]]}}
-  :aliases {"midje" ["with-profile" "test" "midje" ":print-facts"]})
+  :aliases {"midje" ["with-profile" "test" "midje" ":print-facts"]}
+  :main bernoulli.throttler)
